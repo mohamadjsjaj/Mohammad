@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Click the Target Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+    }
+
+    #score {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-size: 20px;
+    }
+
+    #timer {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+    }
+
+    .target {
+      width: 50px;
+      height: 50px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
+      cursor: pointer;
+      box-shadow: 0 0 10px red;
+    }
+
+    #gameOver {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="score">Score: 0</div>
+<div id="timer">Time: 30</div>
+<div id="gameOver"></div>
+
+<script>
+  let score = 0;
+  let timeLeft = 30;
+  let gameActive = true;
+
+  const scoreEl = document.getElementById("score");
+  const timerEl = document.getElementById("timer");
+  const gameOverEl = document.getElementById("gameOver");
+
+  function spawnTarget() {
+    if (!gameActive) return;
+
+    const target = document.createElement("div");
+    target.classList.add("target");
+
+    const x = Math.random() * (window.innerWidth - 50);
+    const y = Math.random() * (window.innerHeight - 50);
+
+    target.style.left = x + "px";
+    target.style.top = y + "px";
+
+    target.onclick = () => {
+      score++;
+      scoreEl.textContent = "Score: " + score;
+      target.remove();
+    };
+
+    document.body.appendChild(target);
+
+    setTimeout(() => {
+      target.remove();
+    }, 1000);
+  }
+
+  function gameLoop() {
+    if (!gameActive) return;
+    spawnTarget();
+    setTimeout(gameLoop, 800);
+  }
+
+  function countdown() {
+    const timer = setInterval(() => {
+      timeLeft--;
+      timerEl.textContent = "Time: " + timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        gameActive = false;
+        gameOverEl.style.display = "block";
+        gameOverEl.textContent = "Game Over! Final Score: " + score;
+      }
+    }, 1000);
+  }
+
+  gameLoop();
+  countdown();
+</script>
+
+</body>
+</html>
